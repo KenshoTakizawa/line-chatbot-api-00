@@ -1,0 +1,33 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: kenshotakizawa
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: line-chatbot-api-00
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: line-chatbot-api-00
+
+provider:
+  name: aws
+  stage: stg
+  region: ap-northeast-1
+  runtime: nodejs20.x
+  apiGateway:
+    shouldStartNameWithService: true
+
+functions:
+  addExp:
+    handler: src/functions/addExp/index.handler
+    events:
+      - httpApi:
+          path: /users/{lineUserId}/addExp
+          method: post
+
+  getUserRelationLevel:
+    handler: src/functions/getUserRelationLevel/index.handler
+    events:
+      - httpApi:
+          path: /users/{lineUserId}/relation-level/ais/{aiId}
+          method: get
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
