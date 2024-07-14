@@ -1,2 +1,12 @@
 node_modules
 .serverless
+/.idea/.gitignore
+/.idea/dataSources.xml
+/.idea/line-chatbot-api-00.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/php.xml
+/.idea/vcs.xml
+/.idea/
+
+.env
