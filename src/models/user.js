@@ -1,6 +1,5 @@
 import {Model, DataTypes} from "sequelize";
 import {sequelize} from "../database.js";
-import RelationType from "./relation_type.js";
 
 class User extends Model {
     getId() {
@@ -16,7 +15,7 @@ class User extends Model {
     }
 
     setLineUserId(value) {
-        this.setDataValue('lineUserId', value);
+        this.setDataValue('lineUserId', value)
     }
 }
 
@@ -27,7 +26,7 @@ User.init({
         type: DataTypes.STRING(255), allowNull: false,
     },
 }, {
-    tableName: 'users', sequelize,
+    tableName: 'users', sequelize, timestamps: false
 });
 
 export default User;

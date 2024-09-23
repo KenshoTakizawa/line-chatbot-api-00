@@ -1,6 +1,5 @@
 import {Model, DataTypes} from "sequelize";
 import {sequelize} from "../database.js";
-import RelationType from "./relation_type.js";
 
 class RelationLevel extends Model {
     getId() {

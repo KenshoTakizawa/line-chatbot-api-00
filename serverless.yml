@@ -1,9 +1,6 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
 org: kenshotakizawa
-# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
-app: line-chatbot-api-00
-# "service" is the name of this project. This will also be added to your AWS resource names.
-service: line-chatbot-api-00
+app: line-chatbot-api
+service: line-chatbot-api
 
 provider:
   name: aws
@@ -26,6 +23,41 @@ functions:
     events:
       - httpApi:
           path: /users/{lineUserId}/relation-level/ais/{aiId}
+          method: get
+
+  getUserSubscription:
+    handler: src/functions/getUserSubscription/index.handler
+    events:
+      - httpApi:
+          path: users/{lineUserId}/subscriptions/ais/{aiId}
+          method: get
+
+  createUserSubscription:
+    handler: src/functions/createUserSubscription/index.handler
+    events:
+      - httpApi:
+          path: users/{lineUserId}/subscriptions
+          method: post
+
+  getDailyConversationCount:
+    handler: src/functions/getDailyConversationCount/index.handler
+    events:
+      - httpApi:
+          path: users/{lineUserId}/dailyConversationCount/ais/{aiId}
+          method: get
+
+  incrementDailyConversationCount:
+    handler: src/functions/incrementDailyConversationCount/index.handler
+    events:
+      - httpApi:
+          path: users/{lineUserId}/ais/{aiId}/dailyConversationCount
+          method: put
+
+  canUserConverse:
+    handler: src/functions/canUserConverse/index.handler
+    events:
+      - httpApi:
+          path: users/{lineUserId}/canUserConverse/ais/{aiId}/
           method: get
 
 plugins:

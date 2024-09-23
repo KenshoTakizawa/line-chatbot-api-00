@@ -4,6 +4,7 @@ export class UserRepository {
     async getUserBylineUserId(lineUserId) {
         try {
             const user = await User.findOne({
+                attributes: ['id', 'lineUserId'],
                 where: {
                     lineUserId: lineUserId
                 }
@@ -25,13 +26,13 @@ export class UserRepository {
     async createUser(lineUserId) {
         try {
             const user = await User.create({
-                lineUserId: lineUserId,
-            })
+                lineUserId: lineUserId
+            });
 
             console.log('Successfully created user: ', user);
             return user;
         } catch (error) {
-            console.error('Error finding when creating user: ', error);
+            console.error('Error creating user: ', error);
             throw error;
         }
     }

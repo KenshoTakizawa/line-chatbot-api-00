@@ -4,6 +4,7 @@ export class AiRepository {
     async getAiById(id) {
         try {
             const ai = await Ai.findOne({
+                attributes: ['id', 'name'],
                 where: {
                     id: id
                 }
