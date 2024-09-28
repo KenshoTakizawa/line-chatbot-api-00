@@ -1,64 +1,118 @@
-org: kenshotakizawa
 app: line-chatbot-api
 service: line-chatbot-api
 
 provider:
   name: aws
-  stage: stg
+  stage: ${opt:stage, 'stg'}
   region: ap-northeast-1
   runtime: nodejs20.x
+  role: ${env:IAM_ROLE}
   apiGateway:
     shouldStartNameWithService: true
+    apiKeys:
+      - line-bot-apis-key-${self:provider.stage}
+  vpc:
+    securityGroupIds:
+      - ${env:SECURITY_GROUP_ID}
+    subnetIds:
+      - ${env:SUBNET_ID}
+    environment:
+      DB_NAME: ${env:DB_NAME, 'amazon-accounts'}
+      DB_HOST: ${env:DB_HOST, 'localhost'}
+      DB_USER: ${env:DB_USER, 'user'}
+      DB_PASS: ${env:DB_PASS, 'pass'}
+      DB_PORT: ${env:DB_PORT, '3306'}
 
 functions:
   addExp:
     handler: src/functions/addExp/index.handler
     events:
-      - httpApi:
+      - http:
           path: /users/{lineUserId}/addExp
           method: post
+          # local環境では動かないので下記をコメントアウトしてください
+          private: true
 
   getUserRelationLevel:
     handler: src/functions/getUserRelationLevel/index.handler
     events:
-      - httpApi:
+      - http:
           path: /users/{lineUserId}/relation-level/ais/{aiId}
           method: get
+          # local環境では動かないので下記をコメントアウトしてください
+          private: true
 
   getUserSubscription:
     handler: src/functions/getUserSubscription/index.handler
     events:
-      - httpApi:
-          path: users/{lineUserId}/subscriptions/ais/{aiId}
+      - http:
+          path: /users/{lineUserId}/subscriptions/ais/{aiId}
           method: get
+          # local環境では動かないので下記をコメントアウトしてください
+          private: true
 
   createUserSubscription:
     handler: src/functions/createUserSubscription/index.handler
     events:
-      - httpApi:
-          path: users/{lineUserId}/subscriptions
+      - http:
+          path: /users/{lineUserId}/subscriptions
           method: post
+          # local環境では動かないので下記をコメントアウトしてください
+          private: true
 
   getDailyConversationCount:
     handler: src/functions/getDailyConversationCount/index.handler
     events:
-      - httpApi:
-          path: users/{lineUserId}/dailyConversationCount/ais/{aiId}
+      - http:
+          path: /users/{lineUserId}/dailyConversationCount/ais/{aiId}
           method: get
+          # local環境では動かないので下記をコメントアウトしてください
+          private: true
 
   incrementDailyConversationCount:
     handler: src/functions/incrementDailyConversationCount/index.handler
     events:
-      - httpApi:
-          path: users/{lineUserId}/ais/{aiId}/dailyConversationCount
+      - http:
+          path: /users/{lineUserId}/ais/{aiId}/dailyConversationCount
           method: put
+          # local環境では動かないので下記をコメントアウトしてください
+          private: true
 
   canUserConverse:
     handler: src/functions/canUserConverse/index.handler
     events:
-      - httpApi:
-          path: users/{lineUserId}/canUserConverse/ais/{aiId}/
+      - http:
+          path: /users/{lineUserId}/canUserConverse/ais/{aiId}
           method: get
+          # local環境では動かないので下記をコメントアウトしてください
+          private: true
+
+resources:
+  Resources:
+    AiChatBotApisWebACL:
+      Type: AWS::WAFv2::WebACL
+      Properties:
+        Name: AiChatBotApisApisWebACL
+        Scope: REGIONAL
+        DefaultAction:
+          Allow: { }
+        VisibilityConfig:
+          SampledRequestsEnabled: true
+          CloudWatchMetricsEnabled: true
+          MetricName: AiChatBotApisWebACLMetric
+        Rules:
+          - Name: AWSManagedRulesCommonRuleSet
+            Priority: 1
+            OverrideAction:
+              None: { }
+            Statement:
+              ManagedRuleGroupStatement:
+                VendorName: AWS
+                Name: AWSManagedRulesCommonRuleSet
+            VisibilityConfig:
+              SampledRequestsEnabled: true
+              CloudWatchMetricsEnabled: true
+              MetricName: AWSManagedRulesCommonRuleSet
 
 plugins:
   - serverless-offline
