@@ -23,6 +23,12 @@ export const handler = async (event) => {
         return res.doNotExistBodyElement('User ID cannot be found.', 400);
     }
 
+    if (!lineUserId) {
+        return res.response('User ID cannot be found.', 400);
+    }
+
+    const aiId = event.pathParameters ? event.pathParameters.aiId : null;
+
     let user = await userRepository.getUserBylineUserId(lineUserId);
 
     // TODO: 関係値レベルの機能を実装するタイミングで、それらの依存関係を考える
@@ -37,12 +43,12 @@ export const handler = async (event) => {
 
     const date = new Date();
 
-    let dailyCount = await dailyCountRepository.findOneByUserAndDate(user.getId(), date);
+    let dailyCount = await dailyCountRepository.findOneByUserAiAndDate(user.getId(), Number(aiId), date);
 
     if (dailyCount) {
         dailyCount.setCount(dailyCount.getCount() + 1);
     } else {
-        dailyCount = await dailyCountRepository.create(user.getId(), date, 1);
+        dailyCount = await dailyCountRepository.create(user.getId(), Number(aiId), date, 1);
     }
 
     await dailyCountRepository.save(dailyCount);

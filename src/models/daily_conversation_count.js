@@ -1,5 +1,5 @@
-import {Model, DataTypes} from "sequelize";
-import {sequelize} from "../database.js";
+import { Model, DataTypes } from "sequelize";
+import { sequelize } from "../database.js";
 
 class DailyConversationCount extends Model {
     getId() {
@@ -16,6 +16,14 @@ class DailyConversationCount extends Model {
 
     setUserId(value) {
         this.setDataValue('userId', value);
+    }
+
+    getAiId() {
+        return this.getDataValue('aiId');
+    }
+
+    setAiId(value) {
+        this.setDataValue('aiId', value);
     }
 
     getDate() {
@@ -45,6 +53,10 @@ DailyConversationCount.init({
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
     },
+    aiId: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+    },
     date: {
         type: DataTypes.DATEONLY,
         allowNull: false,
@@ -60,7 +72,7 @@ DailyConversationCount.init({
 
 DailyConversationCount.associate = (models) => {
     DailyConversationCount.belongsTo(models.User, { foreignKey: 'userId' });
-
+    DailyConversationCount.belongsTo(models.Ai, { foreignKey: 'aiId' });
 }
 
 export default DailyConversationCount;

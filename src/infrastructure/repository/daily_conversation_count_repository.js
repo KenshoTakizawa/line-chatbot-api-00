@@ -1,11 +1,12 @@
 import DailyConversationCount from '../../models/daily_conversation_count.js';
 
 export class DailyConversationCountRepository {
-    async findOneByUserAndDate(userId, date) {
+    async findOneByUserAiAndDate(userId, aiId, date) {
         try {
             const count = await DailyConversationCount.findOne({
                 where: {
                     userId: userId,
+                    aiId: aiId,
                     date: date
                 }
             });
@@ -23,10 +24,11 @@ export class DailyConversationCountRepository {
         }
     }
 
-    async create(userId, date, count) {
+    async create(userId, aiId, date, count) {
         try {
             const dailyCount = await DailyConversationCount.create({
                 userId: userId,
+                aiId: aiId,
                 date: date,
                 count: count
             });
@@ -50,10 +52,10 @@ export class DailyConversationCountRepository {
         }
     }
 
-    async incrementCount(userId, date) {
+    async incrementCount(userId, aiId, date) {
         try {
             const [dailyCount, created] = await DailyConversationCount.findOrCreate({
-                where: { userId: userId, date: date },
+                where: { userId: userId, aiId: aiId, date: date },
                 defaults: { count: 0 }
             });
 
@@ -64,6 +66,20 @@ export class DailyConversationCountRepository {
             return dailyCount;
         } catch (error) {
             console.error('Error incrementing daily conversation count:', error);
+            throw error;
+        }
+    }
+
+    async getTotalCountForUserAndAi(userId, aiId) {
+        try {
+            const totalCount = await DailyConversationCount.sum('count', {
+                where: { userId: userId, aiId: aiId }
+            });
+
+            console.log('Total conversation count:', totalCount);
+            return totalCount || 0;
+        } catch (error) {
+            console.error('Error getting total conversation count:', error);
             throw error;
         }
     }
